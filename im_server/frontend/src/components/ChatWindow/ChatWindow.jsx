@@ -11,8 +11,9 @@ import frontedIcon3 from '../ChatWindow/frontedIcon3.png';
 import frontedIcon4 from '../ChatWindow/frontedIcon4.png';
 import { WebSocketContext } from '../../WebSocketContext';
 import logoIcon from '../ChatWindow/IoA_logo.png';
+import loadingIcon from '../ChatWindow/load.png';
 
-function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, resetChat }) { 
+function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, resetChat, loading, setLoading }) { 
   const [displayMessages, setDisplayMessages] = useState([]);
   const [newMessageText, setNewMessageText] = useState("");
   const [shouldScroll, setShouldScroll] = useState(false);
@@ -99,6 +100,8 @@ function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, reset
         comm_id: "",
       };
   
+      // 显示加载状态
+      setLoading(true);
       // 发送消息到 WebSocket
       ws.send(JSON.stringify(message));
   
@@ -106,8 +109,7 @@ function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, reset
       // 清空输入框
       setNewMessageText("");
       setShowTaskCards(false); // 发送消息后隐藏task-cards
-      // 更新本地状态以显示消息
-      setDisplayMessages((prevMessages) => [...prevMessages, message]);
+      loading(true);
     }
   };
 
@@ -144,7 +146,7 @@ function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, reset
       </div>
 
       
-
+      
       <div className="chat-messages" ref={scrollRef}>
         {/* {displayMessages.length > 0 && (
           <div className="chat-goal">
@@ -183,6 +185,12 @@ function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, reset
             </div>
           </div>
         )}
+        {loading && (
+          <div className="loading-container">
+            <img src={loadingIcon} alt="Loading" className="loading-icon" />
+            <span className="loading-text">Currently forming a group chat for you</span>
+          </div>
+        )}
       </div>
       <div className="message-container">
         <form className="message-input" onSubmit={handleSubmit}>
@@ -197,7 +205,7 @@ function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, reset
           </button>
         </form>
       </div>
-    </div >
+    </div>
   );
 }
 
