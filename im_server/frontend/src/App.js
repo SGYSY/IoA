@@ -5,34 +5,15 @@
 
 // function App() {
 //   // Left panel
-//   const [groups, setGroups] = useState([
-//     // { comm_id: "1", agent_names: ["asdf", "dfdfdf"] },
-//     // { comm_id: "2", agent_names: ["Friends"] },
-//   ]);
+//   const [groups, setGroups] = useState([]);
 
 //   // All right panel data
-//   const [messages, setMessages] = useState({
-//     // comm_id: [{
-//     //   comm_id: "xx",
-//     //   sender: "xx",
-//     //   content: "xx",
-//     //   goal: "xx",
-//     //   next_speaker: ["xx"],
-//     //   state: 0,
-//     //   task_abstract: "",
-//     //   task_conclusion: "",
-//     //   task_desc: "",
-//     //   task_id: "",
-//     //   team_members: [""],
-//     //   team_up_depth: 1,
-//     //   triggers: [],
-//     // }],
-//   });
+//   const [messages, setMessages] = useState({});
 //   const [selectedGroup, setSelectedGroup] = useState(null);
+//   const [showTaskCards, setShowTaskCards] = useState(true);
 
 //   let commID2Name = {};
 //   let socket; // WebSocket object
-
 
 //   function update_message(message) {
 //     setMessages((prevMessages) => {
@@ -46,22 +27,20 @@
 //   }
 
 //   useEffect(() => {
-//     const MAX_RETRIES = 3; // Adjust the maximum retry attempts
-//     const RETRY_INTERVAL = 3000; // Interval between retries in milliseconds
-//     // let socket; 
-//     let connectionEstablished = false; // Flag to track connection status
+//     const MAX_RETRIES = 3;
+//     const RETRY_INTERVAL = 3000;
+//     let connectionEstablished = false;
 
 //     function connectWebSocket() {
 //       socket = new WebSocket("ws://127.0.0.1:7788/chatlist_ws");
 
-//       // Event Handlers
 //       socket.onopen = () => {
 //         console.log("WebSocket connection established!");
-//         connectionEstablished = true; // Update the flag on successful connection
+//         connectionEstablished = true;
 //       };
 
 //       socket.onmessage = (event) => {
-//         const message = JSON.parse(event.data); // Assuming the message is in JSON format
+//         const message = JSON.parse(event.data);
 //         console.log(message);
 //         switch (message.frontend_type) {
 //           case "teamup":
@@ -95,12 +74,12 @@
 
 //       socket.onerror = (error) => {
 //         console.error("WebSocket error:", error);
-//         connectionEstablished = false; // Update the flag on error
+//         connectionEstablished = false;
 //       };
 
 //       socket.onclose = (event) => {
 //         console.log("WebSocket connection closed:", event);
-//         connectionEstablished = false; // Update the flag on close
+//         connectionEstablished = false;
 //       };
 //     }
 
@@ -110,19 +89,18 @@
 //         connectWebSocket();
 //         retries++;
 //       } else {
-//         clearInterval(intervalId); // Stop trying after a successful connection or max retries
+//         clearInterval(intervalId);
 //       }
 //     }, RETRY_INTERVAL);
 
 //     return () => {
 //       clearInterval(intervalId);
 //       if (socket) {
-//         socket.close(); // Correct method to close the WebSocket
+//         socket.close();
 //       }
 //     };
 //   }, []);
 
-//   // Fetch all the chat records from the server when initialized
 //   useEffect(() => {
 //     fetch("http://127.0.0.1:7788/fetch_chat_record", {
 //       method: "POST",
@@ -169,12 +147,19 @@
 
 //   let selectedMessages = messages[selectedGroup] || [];
 
+//   const handleGroupSelect = (group) => {
+//     setSelectedGroup(group);
+//     setShowTaskCards(false);
+//   };
+
 //   return (
 //     <div className="app-container">
-//       <GroupList groups={groups} onGroupSelect={setSelectedGroup} />
+//       <GroupList groups={groups} onGroupSelect={handleGroupSelect} />
 //       <ChatWindow
 //         messages={selectedMessages}
 //         teamName={selectedGroup ? commID2Name[selectedGroup] : "Select a group"}
+//         showTaskCards={showTaskCards}
+//         setShowTaskCards={setShowTaskCards} // 传递回调函数
 //       />
 //     </div>
 //   );
@@ -182,41 +167,20 @@
 
 // export default App;
 
+
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import GroupList from "./components/GroupList/GroupList";
 import ChatWindow from "./components/ChatWindow/ChatWindow";
 
 function App() {
-  // Left panel
-  const [groups, setGroups] = useState([
-    // { comm_id: "1", agent_names: ["asdf", "dfdfdf"] },
-    // { comm_id: "2", agent_names: ["Friends"] },
-  ]);
-
-  // All right panel data
-  const [messages, setMessages] = useState({
-    // comm_id: [{
-    //   comm_id: "xx",
-    //   sender: "xx",
-    //   content: "xx",
-    //   goal: "xx",
-    //   next_speaker: ["xx"],
-    //   state: 0,
-    //   task_abstract: "",
-    //   task_conclusion: "",
-    //   task_desc: "",
-    //   task_id: "",
-    //   team_members: [""],
-    //   team_up_depth: 1,
-    //   triggers: [],
-    // }],
-  });
+  const [groups, setGroups] = useState([]);
+  const [messages, setMessages] = useState({});
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [showTaskCards, setShowTaskCards] = useState(true);
 
   let commID2Name = {};
-  let socket; // WebSocket object
+  let socket;
 
   function update_message(message) {
     setMessages((prevMessages) => {
@@ -230,22 +194,20 @@ function App() {
   }
 
   useEffect(() => {
-    const MAX_RETRIES = 3; // Adjust the maximum retry attempts
-    const RETRY_INTERVAL = 3000; // Interval between retries in milliseconds
-    // let socket; 
-    let connectionEstablished = false; // Flag to track connection status
+    const MAX_RETRIES = 3;
+    const RETRY_INTERVAL = 3000;
+    let connectionEstablished = false;
 
     function connectWebSocket() {
       socket = new WebSocket("ws://127.0.0.1:7788/chatlist_ws");
 
-      // Event Handlers
       socket.onopen = () => {
         console.log("WebSocket connection established!");
-        connectionEstablished = true; // Update the flag on successful connection
+        connectionEstablished = true;
       };
 
       socket.onmessage = (event) => {
-        const message = JSON.parse(event.data); // Assuming the message is in JSON format
+        const message = JSON.parse(event.data);
         console.log(message);
         switch (message.frontend_type) {
           case "teamup":
@@ -271,7 +233,6 @@ function App() {
               });
             });
             break;
-
           default:
             break;
         }
@@ -279,12 +240,12 @@ function App() {
 
       socket.onerror = (error) => {
         console.error("WebSocket error:", error);
-        connectionEstablished = false; // Update the flag on error
+        connectionEstablished = false;
       };
 
       socket.onclose = (event) => {
         console.log("WebSocket connection closed:", event);
-        connectionEstablished = false; // Update the flag on close
+        connectionEstablished = false;
       };
     }
 
@@ -294,19 +255,18 @@ function App() {
         connectWebSocket();
         retries++;
       } else {
-        clearInterval(intervalId); // Stop trying after a successful connection or max retries
+        clearInterval(intervalId);
       }
     }, RETRY_INTERVAL);
 
     return () => {
       clearInterval(intervalId);
       if (socket) {
-        socket.close(); // Correct method to close the WebSocket
+        socket.close();
       }
     };
   }, []);
 
-  // Fetch all the chat records from the server when initialized
   useEffect(() => {
     fetch("http://127.0.0.1:7788/fetch_chat_record", {
       method: "POST",
@@ -365,6 +325,7 @@ function App() {
         messages={selectedMessages}
         teamName={selectedGroup ? commID2Name[selectedGroup] : "Select a group"}
         showTaskCards={showTaskCards}
+        setShowTaskCards={setShowTaskCards} // 传递回调函数
       />
     </div>
   );
