@@ -130,7 +130,7 @@ function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, reset
     <div className="chat-window">
         {/* <span className="group-name">{group.team_name}</span> */}
       <div className="right-header-bar">
-        <span className="group-name">Internet of Agents</span>
+        <span className="group-name">{title}</span>
         <div className="actions"> {/* 包裹 New chat 和 Share 的 div */}
           <div className="new-chat" onClick={resetChat}>
             <img src={chatIcon} alt="Chat" className="chat-img" />

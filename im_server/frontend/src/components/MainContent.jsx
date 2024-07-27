@@ -78,7 +78,7 @@ function MainContent() {
       <ChatWindow
         messages={selectedMessages}
         teamName={
-          selectedGroup ? commID2Name[selectedGroup] : "Select a group"
+          selectedGroup ? commID2Name[selectedGroup] : "Internet of Agents"
         }
         showTaskCards={showTaskCards}
         setShowTaskCards={setShowTaskCards}
