@@ -318,6 +318,11 @@ function App() {
     setShowTaskCards(false);
   };
 
+  const resetChat = () => {
+    setSelectedGroup(null);
+    setShowTaskCards(true);
+  };
+
   return (
     <div className="app-container">
       <GroupList groups={groups} onGroupSelect={handleGroupSelect} />
@@ -326,6 +331,7 @@ function App() {
         teamName={selectedGroup ? commID2Name[selectedGroup] : "Select a group"}
         showTaskCards={showTaskCards}
         setShowTaskCards={setShowTaskCards} // 传递回调函数
+        resetChat={resetChat}
       />
     </div>
   );

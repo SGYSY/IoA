@@ -11,7 +11,7 @@ import frontedIcon3 from '../ChatWindow/frontedIcon3.png';
 import frontedIcon4 from '../ChatWindow/frontedIcon4.png';
 import logoIcon from '../ChatWindow/IoA_logo.png';
 
-function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards }) {
+function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, resetChat }) { 
   const [displayMessages, setDisplayMessages] = useState([]);
   const [newMessageText, setNewMessageText] = useState("");
   const [shouldScroll, setShouldScroll] = useState(false);
@@ -165,7 +165,7 @@ function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards }) {
       <div className="right-header-bar">
         <span className="group-name">INTERNET OF AGENTS</span>
         <div className="actions"> {/* 包裹 New chat 和 Share 的 div */}
-          <div className="new-chat">
+          <div className="new-chat" onClick={resetChat}>
             <img src={chatIcon} alt="Chat" className="chat-img" />
             <span className="username-chat">New chat</span>
           </div>
