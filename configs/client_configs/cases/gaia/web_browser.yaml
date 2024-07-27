@@ -17,7 +17,7 @@ tool_agent:
   image_name: react-agent
   container_name: web_browser_react_agent
   port: 7070
-  model: gpt-4-1106-preview
+  model: gpt-4o
   max_num_steps: 6
 
 comm:
@@ -31,5 +31,5 @@ comm:
     team_up_tools: configs/tools/tools_team_up.yaml
   llm:
     llm_type: openai-chat
-    model: gpt-4-1106-preview
+    model: gpt-4o
     temperature: 0.1

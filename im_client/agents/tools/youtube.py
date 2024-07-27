@@ -5,7 +5,7 @@ import requests
 from common.log import logger
 
 TEMP_DIR = "./temp"
-WHISPER_URL = "http://166.111.121.22:8848/whisper"
+WHISPER_URL = "http://166.111.121.22:8850/whisper"
 MAX_CHAR = 10000
 
 

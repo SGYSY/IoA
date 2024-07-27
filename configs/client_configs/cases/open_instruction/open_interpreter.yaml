@@ -19,6 +19,6 @@ comm:
 
   llm:
     llm_type: openai-chat
-    model: gpt-4-1106-preview
+    model: gpt-4o
     # model: gpt-4-1106
     temperature: 0.1

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import Message from "../Message/Message"; // Assuming you have a Message component
 import "./ChatWindow.css"; // Assuming you have a CSS file
 import ReactMarkdown from 'react-markdown';
@@ -9,6 +9,7 @@ import frontedIcon1 from '../ChatWindow/frontedIcon1.png';
 import frontedIcon2 from '../ChatWindow/frontedIcon2.png';
 import frontedIcon3 from '../ChatWindow/frontedIcon3.png';
 import frontedIcon4 from '../ChatWindow/frontedIcon4.png';
+import { WebSocketContext } from '../../WebSocketContext';
 import logoIcon from '../ChatWindow/IoA_logo.png';
 
 function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, resetChat }) { 
@@ -16,51 +17,52 @@ function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, reset
   const [newMessageText, setNewMessageText] = useState("");
   const [shouldScroll, setShouldScroll] = useState(false);
   const scrollRef = useRef(null);
-  const ws = useRef(null);
-  const ws_url = "ws://localhost:7788/chatlist_ws";
+  const { ws } = useContext(WebSocketContext);
+  // const connectWebSocket = () => {
+  //   ws.current = new WebSocket(ws_url);
 
-  const connectWebSocket = () => {
-    ws.current = new WebSocket(ws_url);
-
-    ws.current.onopen = () => {
-      // 心跳检测重置
-      handleHeartCheck.reset().start();
-      // ws.current.send("hello")
-      console.log("WebSocket connection opened");
-    };
+  //   ws.current.onopen = () => {
+  //     // 心跳检测重置
+  //     handleHeartCheck.reset().start();
+  //     // ws.current.send("hello")
+  //     console.log("WebSocket connection opened");
+  //   };
     
-    ws.current.onmessage = (event) => {
-      const data = event.data;
-      console.log("Received message:", data);
-      setDisplayMessages((prevMessages) => [...prevMessages, { message: data }]);
-    };
+  //   // ws.current.onmessage = (event) => {
+  //   //   const data = event.data;
+  //   //   // 连接正常
+  //   //   handleHeartCheck.reset().start();
+  //   //   console.log("Received message:", data);
+  //   //   // 暂时注释
+  //   //   //splayMessages((prevMessages) => [...prevMessages, { message: data }]);
+  //   // };
 
-    ws.current.onmessage = handleWebSocketMessage;
+  //   ws.current.onmessage = handleWebSocketMessage;
 
-    ws.current.onclose = (event) => {
-      // 重新连接websocket
-      reContent(ws_url);
-      console.log("WebSocket connection closed:", event);
-      // setTimeout(connectWebSocket, 1000);
-    };
+  //   ws.current.onclose = (event) => {
+  //     // 重新连接websocket
+  //     reContent(ws_url);
+  //     console.log("WebSocket connection closed:", event);
+  //     // setTimeout(connectWebSocket, 1000);
+  //   };
 
-    ws.current.onerror = (error) => {
-      // 重新连接websocket
-      reContent(ws_url);
-      console.log("WebSocket error:", error);
-    };
-  };
+  //   ws.current.onerror = (error) => {
+  //     // 重新连接websocket
+  //     reContent(ws_url);
+  //     console.log("WebSocket error:", error);
+  //   };
+  // };
 
 
-  useEffect(() => {
-    connectWebSocket();
+  // useEffect(() => {
+  //   connectWebSocket();
 
-    return () => {
-      if (window.onbeforeunload) {
-        ws.current.close();
-      }
-    };
-  }, []);
+  //   return () => {
+  //     if (window.onbeforeunload) {
+  //       ws.current.close();
+  //     }
+  //   };
+  // }, []);
 
 
   useEffect(() => {
@@ -93,12 +95,12 @@ function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, reset
 
 
   // 重新连接websocket
-  const reContent = () => {
-    // 延迟避免请求过多
-    setTimeout(function () {
-      connectWebSocket();
-    }, 2000);
-  };
+  // const reContent = () => {
+  //   // 延迟避免请求过多
+  //   setTimeout(function () {
+  //     connectWebSocket();
+  //   }, 2000);
+  // };
 
 
   //websocket心跳检测
@@ -143,7 +145,7 @@ function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, reset
       };
   
       // 发送消息到 WebSocket
-      ws.current.send(JSON.stringify(message));
+      ws.send(JSON.stringify(message));
   
       // 更新本地状态以显示消息
       setDisplayMessages((prevMessages) => [...prevMessages, message]);
@@ -155,7 +157,17 @@ function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, reset
   };
 
 
-  const handleWebSocketMessage = (event) => {};
+  const handleWebSocketMessage = (event) => {
+    try {
+      // 做测试，从server返回的代码还没有JSON格式化
+      // const parsedData = JSON.parse(data);
+      const data = event.data;
+      console.log("Received message:", data);
+      setDisplayMessages((prevMessages) => [...prevMessages, data]);
+    } catch(e) {
+      console.error("Failed to get WebSocket message");
+    }
+  };
 
   const title = teamName;
 
