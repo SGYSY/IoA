@@ -10,7 +10,8 @@ class AgentRegistryRetrivalParam(BaseModel):
 class AgentRegistryTeamupParam(BaseModel):
     sender: str
     agent_names: list[str]
-    team_name: str | None = None
+    team_name: str | None=None
+    comm_id: str | None=None
 
 
 class AgentRegistryTeamupOutput(BaseModel):

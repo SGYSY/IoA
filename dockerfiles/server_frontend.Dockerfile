@@ -14,7 +14,7 @@ RUN npm config set registry https://registry.npmmirror.com && npm install
 COPY im_server/frontend .
 
 # Step 6: Your app binds to port 3000 so you'll use the EXPOSE instruction to have it mapped by the docker daemon
-# EXPOSE 3000
+# EXPOSE 8081
 
 # Step 7: Define the command to run your app using CMD which defines your runtime
 # CMD ["npm", "run", "build"]
@@ -25,6 +25,6 @@ FROM nginx:alpine
 
 COPY --from=build /app/build /usr/share/nginx/html
 
-EXPOSE 80
+EXPOSE 8081
 
 CMD ["nginx", "-g", "daemon off;"]

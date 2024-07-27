@@ -39,25 +39,26 @@ services:
     stdin_open: true
     tty: true
 
-  # Agent2:
-  #   image: ioa-client:latest
-  #   build:
-  #     context: ../../
-  #     dockerfile: dockerfiles/client.Dockerfile
-  #   container_name: react-agent-2
-  #   env_file:
-  #     - .env
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #     - ../../configs/client_configs:/app/configs
-  #   environment:
-  #     - OPENAI_API_KEY
-  #   ports:
-  #     - 5051:5050
-  #   depends_on:
-  #     - Server
-  #   stdin_open: true
-  #   tty: true
+  Agent2:
+    image: ioa-client:latest
+    build:
+      context: ../../
+      dockerfile: dockerfiles/client.Dockerfile
+    container_name: react-agent-2
+    env_file:
+      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../../configs/client_configs:/app/configs
+    environment:
+      - OPENAI_API_KEY
+      - CUSTOM_CONFIG=configs/cases/paper_writing/chengyang.yaml
+    ports:
+      - 5051:5050
+    depends_on:
+      - Server
+    stdin_open: true
+    tty: true
 
   ServerFrontend:
     image: ioa-server-frontend:latest
@@ -66,7 +67,7 @@ services:
       dockerfile: dockerfiles/server_frontend.Dockerfile
     container_name: server_frontend
     ports:
-      - 80:80
+      - 8081:80
     depends_on:
       - Server
     stdin_open: true

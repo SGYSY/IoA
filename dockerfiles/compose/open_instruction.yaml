@@ -80,7 +80,95 @@ services:
       dockerfile: dockerfiles/server_frontend.Dockerfile
     container_name: server_frontend
     ports:
-      - 80:80
+      - 8081:80
+    depends_on:
+      - Server
+    stdin_open: true
+    tty: true
+
+  WebBrowser:
+    image: ioa-client:latest
+    build:
+      context: ../../
+      dockerfile: dockerfiles/client.Dockerfile
+    container_name: web_browser
+    env_file:
+      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./volumes/sqlite:/app/database
+      - ./volumes/openai_response_log:${OPENAI_RESPONSE_LOG_PATH}
+      - ../../configs/client_configs:/app/configs
+    environment:
+      - CUSTOM_CONFIG=configs/cases/gaia/web_browser.yaml
+    ports:
+      - 5052:5050
+    depends_on:
+      - Server
+    stdin_open: true
+    tty: true
+
+  CodeExecutor:
+    image: ioa-client:latest
+    build:
+      context: ../../
+      dockerfile: dockerfiles/client.Dockerfile
+    container_name: code_executor
+    env_file:
+      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./volumes/sqlite:/app/database
+      - ./volumes/openai_response_log:${OPENAI_RESPONSE_LOG_PATH}
+      - ../../configs/client_configs:/app/configs
+    environment:
+      - CUSTOM_CONFIG=configs/cases/gaia/code_executor.yaml
+    ports:
+      - 5053:5050
+    depends_on:
+      - Server
+    stdin_open: true
+    tty: true
+
+  YouTube:
+    image: ioa-client:latest
+    build:
+      context: ../../
+      dockerfile: dockerfiles/client.Dockerfile
+    container_name: youtube
+    env_file:
+      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./volumes/sqlite:/app/database
+      - ./volumes/openai_response_log:${OPENAI_RESPONSE_LOG_PATH}
+      - ../../configs/client_configs:/app/configs
+    environment:
+      - CUSTOM_CONFIG=configs/cases/gaia/youtube.yaml
+    ports:
+      - 5054:5050
+    depends_on:
+      - Server
+    stdin_open: true
+    tty: true
+
+  Wikidata:
+    image: ioa-client:latest
+    build:
+      context: ../../
+      dockerfile: dockerfiles/client.Dockerfile
+    container_name: wikidata
+    env_file:
+      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./volumes/sqlite:/app/database
+      - ./volumes/openai_response_log:${OPENAI_RESPONSE_LOG_PATH}
+      - ../../configs/client_configs:/app/configs
+    environment:
+      - CUSTOM_CONFIG=configs/cases/gaia/wikidata.yaml
+    ports:
+      - 5055:5050
     depends_on:
       - Server
     stdin_open: true

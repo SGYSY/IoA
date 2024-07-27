@@ -251,11 +251,26 @@ class CommunicationLayer:
                 obs_kwargs=obs_kwargs,
                 max_turns=max_turns,
                 skip_naming=skip_naming,
+                comm_id=comm_id,
             )
+            
         else:
             # continue the previous discussion
             if comm_id not in self.comm_bank:
-                return comm_id, f"Could not find the communication session: {comm_id}."
+                # return comm_id, f"Could not find the communication session: {comm_id}."
+                logger.info(f"First launch_goal: {comm_id}")
+                await self.team_up(
+                    goal,
+                    team_member_names,
+                    team_up_depth=team_up_depth,
+                    is_collaborative_planning_enabled=is_collaborative_planning_enabled,
+                    obs_kwargs=obs_kwargs,
+                    max_turns=max_turns,
+                    skip_naming=skip_naming,
+                    comm_id=comm_id,
+                )
+            else:
+                logger.info(f"Continuing discussion with comm_id: {comm_id}")
             comm_info: CommunicationInfo = self.comm_bank[comm_id]
             comm_info.conclusion = None
             comm_info.max_turns = max_turns
@@ -278,7 +293,7 @@ class CommunicationLayer:
                 self.comm_bank[comm_id] = comm_info
                 await self._send_message(new_message)
 
-        if cont_input is None:
+        if cont_input is None or (cont_input is not None and cont_input.get("sender") == "User"):
             await self.coordination(
                 new_message=new_message,
                 comm_id=comm_id,
@@ -292,6 +307,7 @@ class CommunicationLayer:
             if conclusion is None:
                 await asyncio.sleep(5)
             else:
+                logger.info(f"Finished launch_goal: {comm_id}")
                 return comm_id, conclusion
 
     async def _naming_team(self, goal: str, team_members: list[str] = []) -> str:
@@ -315,10 +331,12 @@ class CommunicationLayer:
         tool_call: ChatCompletionMessageToolCall,
         goal: str,
         skip_naming: bool = True,
+        comm_id: str | None=None,
     ) -> Tuple[bool, LLMResult, str, list[str]]:
         tool_name = tool_call.function.name
         tool_input = tool_call.function.arguments
         tool_call_id = tool_call.id
+        comm_id=comm_id
         match tool_name:
             case "agent_discovery":
                 try:
@@ -347,12 +365,13 @@ class CommunicationLayer:
                 for agent in agent_infos:
                     if agent["name"] not in self.agent_contact and agent["name"] != self.name:
                         self.agent_contact[agent["name"]] = agent
-                return False, result, None, None
+                return False, result, comm_id, None
             case "team_up":
                 try:
                     team_member_names = tool_input["team_members"]
                     team_members = await ServerHelper.query_assistant(team_member_names)
                     team_name = None
+                    comm_id=comm_id
                     if not skip_naming:
                         team_name = await self._naming_team(goal, team_members)
 
@@ -360,8 +379,8 @@ class CommunicationLayer:
                         sender=self.name,
                         agent_names=[agent_name for agent_name in team_member_names if agent_name != self.name],
                         team_name=team_name,
+                        comm_id=comm_id,
                     )
-
                     result = LLMResult(
                         content="Group Established.",
                         tool_call_id=tool_call_id,
@@ -388,6 +407,7 @@ class CommunicationLayer:
         memory: ChatHistoryMemory,
         obs_kwargs: dict = {},
         skip_naming: bool = True,
+        comm_id: str | None=None,
         is_last_attempt: bool = False,
     ) -> Tuple[bool, str, list[str]]:
         """
@@ -427,13 +447,14 @@ class CommunicationLayer:
         memory.add_messages(response)
 
         finished = False
-        comm_id = None
+        comm_id = comm_id
         team_members = None
         if response.parsed_tool_calls:
             for i, tool_call in enumerate(response.parsed_tool_calls):
                 finished, tool_response, comm_id, team_members = await self._call_teamup_tool(
-                    tool_call, goal, skip_naming
+                    tool_call, goal, skip_naming, comm_id
                 )
+                logger.info(f"_discover_and_teamup: {comm_id}")
                 if tool_response is not None:
                     memory.add_messages(tool_response)
                 if finished:
@@ -449,6 +470,7 @@ class CommunicationLayer:
         obs_kwargs: dict[str, Any] = {},
         max_turns: int | None = None,
         skip_naming: bool = True,
+        comm_id: str | None=None,
     ) -> str:
         """Given a high-level goal, the communication agent decides whether to team up
         with other agents. The server will build a chat session including all the
@@ -480,6 +502,7 @@ class CommunicationLayer:
                 sender=self.name,
                 agent_names=[name for name in team_member_names if name != self.name],
                 team_name=team_name,
+                comm_id=comm_id,
             )
             team_members.append({"name": self.name, "type": self.agent_type, "desc": self.desc})
             comm_id = team_info.comm_id
@@ -487,14 +510,15 @@ class CommunicationLayer:
             # if the team members are not specified, let the agent itself
             # search for the agents on the server, and decide who to teamup with
             memory = ChatHistoryMemory()
-            comm_id = None
+            # comm_id = None
+            comm_id = comm_id
             local_contact = self.agent_contact.items()
             for i in range(global_config["comm"]["max_team_up_attempts"]):
                 is_last_attempt = i == global_config["comm"]["max_team_up_attempts"] - 1
                 finished, comm_id, team_members = await self._discover_and_teamup(
-                    goal, local_contact, memory, obs_kwargs, skip_naming, is_last_attempt=is_last_attempt
+                    goal, local_contact, memory, obs_kwargs, skip_naming, comm_id=comm_id, is_last_attempt=is_last_attempt
                 )
-
+                logger.info(f"team_up comm_id: {comm_id}")
                 if finished:
                     break
 
@@ -511,7 +535,7 @@ class CommunicationLayer:
             max_turns=max_turns,
         )
         self.task_manager_bank[comm_id] = TaskManager(comm_id)
-
+        logger.info(f"Finished team_up comm_id: {comm_id}")
         return comm_id
 
     def _update_memory_and_task_manager(self, new_message: AgentMessage, comm_id: str):
@@ -1485,12 +1509,30 @@ class CommunicationLayer:
             message = await self.server_websocket.receive_message()
             comm_id = message.comm_id
             logger.info(f"Received message: {str(message)}")
-            match message.state:
-                case CommunicationState.DISCUSSION | CommunicationState.VOTE:
-                    await self.coordination(message, comm_id, max_turns=message.max_turns)
-                # TODO: complete execution cases
+            match message.type:
+                case CommunicationType.LAUNCH_GOAL:
+                    cont_input = {
+                        "content": message.content,
+                        "sender": message.sender,
+                    }
+                    goal = message.content
+                    await self.launch_goal(
+                        goal=goal,
+                        team_member_names=None,
+                        team_up_depth=None,
+                        is_collaborative_planning_enabled=False,
+                        comm_id=comm_id,
+                        cont_input=cont_input,
+                        skip_naming=False,
+                    )
+                    
                 case _:
-                    logger.error(f"Unknown state: {message.state}")
+                    match message.state:
+                        case CommunicationState.DISCUSSION | CommunicationState.VOTE:
+                            await self.coordination(message, comm_id, max_turns=message.max_turns)
+                        # TODO: complete execution cases
+                        case _:
+                            logger.error(f"Unknown state: {message.state}")
 
     async def shutdown(self):
         if self.tool_agent is not None:

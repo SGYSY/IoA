@@ -69,6 +69,7 @@ class CommunicationType(Enum):
     PAUSE = 9
     CONCLUDE_GROUP_DISCUSSION = 10
     CONCLUSION = 11
+    LAUNCH_GOAL = 12
 
 
 COMMUNICATION_TYPE_MAP = {

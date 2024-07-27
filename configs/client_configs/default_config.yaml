@@ -1,4 +1,5 @@
 server:
+  host: http://ioa-server
   port: 7788
   hostname: ioa-server
 
@@ -14,7 +15,7 @@ tool_agent:
   rag:
     persist_dir: ""
     chunk_size: 512
-    llm_model: gpt-4-1106-preview
+    llm_model: gpt-4o
     llm_temperature: 0.1
     similarity_top_k: 2
     data: ""
@@ -24,9 +25,11 @@ comm:
   type: Human Assistant
   support_nested_teams: false
   max_team_up_attempts: 10
+  tools:
+    team_up_tools: configs/tools/tools_team_up.yaml
   llm:
     llm_type: openai-chat
-    model: gpt-4-1106-preview
+    model: gpt-4o
     temperature: 0.1
   observation_func: dummy
   discussion_only: false

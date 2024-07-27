@@ -19,7 +19,7 @@ class ServerHelper:
     Helper functions that help communicate with the server.
     """
 
-    host = "http://" + global_config["server"]["hostname"]
+    host = global_config["server"]["host"]
     port = global_config["server"]["port"]
     url = f"{host}:{port}"
 
@@ -86,7 +86,7 @@ class ServerHelper:
         before_sleep=log_retry,
     )
     async def teamup(
-        cls, sender: str, agent_names: list[str], team_name: str | None = None
+        cls, sender: str, agent_names: list[str], team_name: str | None = None, comm_id: str | None=None
     ) -> AgentRegistryTeamupOutput:
         """
         Forming group with specified agents
@@ -98,6 +98,7 @@ class ServerHelper:
                     "sender": sender,
                     "agent_names": agent_names,
                     "team_name": team_name,
+                    "comm_id": comm_id,
                 },
             )
             teamup_result.raise_for_status()

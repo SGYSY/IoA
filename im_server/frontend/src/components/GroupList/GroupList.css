@@ -1,10 +1,11 @@
 .chat-list {
-  width: 30%;
+  width: 25%;
   background-color: #f7f7f7;
   border-right: 1px solid lightgray;
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
+  background-color: #f2ecf5;
 }
 
 .chat-list ul {
@@ -23,10 +24,11 @@
   border-bottom: 1px solid lightgray; /* Divider between groups */
   white-space: pre-wrap;
   overflow-x: hidden;
+  background-color: #f2ecf5;
 }
 
 .chat-item:hover {
-  background-color: lightgray;
+  background-color: #f1f1f1;
 }
 
 .chat-item-selected {
@@ -142,6 +144,7 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  color: rgb(8, 9, 60); /* 修改字体颜色 */
 }
 
 .group-time {
@@ -156,4 +159,40 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.left-header-bar {
+  display: flex; /* 使用 flexbox */
+  align-items: center; /* 垂直居中对齐 */
+  justify-content: space-between; /* 左右两边对齐 */
+  padding: 5px 15px; /* 给整个 header 添加内边距 */
+  border-bottom: 1px solid lightgray;
+}
+
+.logo {
+  display: flex; /* 使 Logo 和用户名在一行 */
+  align-items: center; /* 垂直居中对齐 */
+  padding: 5px; /* Logo 和用户名周围的内边距 */
+}
+
+.logo-img {
+  width: 40px;  /* 设置宽度 */
+  height: 40px; /* 设置高度 */
+  margin-right: 10px; /* Logo 图片与用户名之间的间距 */
+}
+
+.username {
+  font-weight: bold; /* 加粗 */
+  color: rgb(8, 9, 60); /* 修改字体颜色 */
+}
+
+.menu {
+  font-size: 24px; /* 菜单图标大小 */
+  margin-left: auto; /* 自动左边距，使菜单靠右 */
+}
+
+.username-logo {
+  font-size: 24px; /* 菜单图标大小 */
+  font-weight: bold; /* 加粗 */
+  color: rgb(8, 9, 60); /* 修改字体颜色 */
 }

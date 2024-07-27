@@ -3,7 +3,6 @@ import './Message.css';
 import getAvatar from '../../utils/avatar';
 import ReactMarkdown from 'react-markdown';
 
-
 function Message({ message }) {
   let type2string = {
     0: "default",
@@ -25,23 +24,29 @@ function Message({ message }) {
     nextSpeaker = message.next_speaker.join(", ");
   }
   return (
-    <div className="message">
-      <div className="message-header">
-        <img src={`${getAvatar(message.sender)}`} alt={`${message.sender}'s avatar`} className="avatar" />
-        <span className="username">{message.sender}</span>
-      </div>
-      <div className="message-bubble">
-        <ReactMarkdown className="message-value">
-          {message.content}
-        </ReactMarkdown>
-        <span className="message-key">Next Speaker: </span>
-        <span className='message-value'>{nextSpeaker}</span>
-        <br></br>
-        <span className="message-key">Type: </span>
-        <span className='message-value'>{type}</span>
-        <br></br>
-        <span className="message-key">Updated Plan: </span>
-        <span className='message-value'>{message.updated_plan}</span>
+    <div className="message-list-container">
+      <div className={`message ${message.sender === 'User' ? 'message-user' : ''}`}>
+        <div className={`message-header ${message.sender === 'User' ? 'message-header-user' : ''}`}>
+          <img src={`${getAvatar(message.sender)}`} alt={`${message.sender}'s avatar`} className="avatar" />
+          <span className="username">{message.sender}</span>
+        </div>
+        <div className={`message-bubble ${message.sender === 'User' ? 'message-bubble-user' : ''}`}>
+          <ReactMarkdown className="message-value">
+            {message.content}
+          </ReactMarkdown>
+          {message.sender !== 'User' && (
+            <>
+              <span className="message-key">Next Speaker: </span>
+              <span className="message-value">{nextSpeaker}</span>
+              <br />
+              <span className="message-key">Type: </span>
+              <span className="message-value">{type}</span>
+              <br />
+              <span className="message-key">Updated Plan: </span>
+              <span className="message-value">{message.updated_plan}</span>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./GroupList.css"; // Assuming you have a CSS file
 import getAvatar from "../../utils/avatar";
+import logoIcon from '../ChatWindow/IoA_logo.png';
 
 function AvatarGrid({ members }) {
   const getGridClass = () => {
@@ -25,8 +26,6 @@ function AvatarGrid({ members }) {
   );
 }
 
-
-
 function GroupList({ groups, onGroupSelect }) {
   const [selectedId, setSelectedId] = useState(null);
 
@@ -37,6 +36,13 @@ function GroupList({ groups, onGroupSelect }) {
 
   return (
     <div className="chat-list">
+      <div className="left-header-bar">
+        <div className="logo">
+          <img src={logoIcon} alt="Logo" className="logo-img"></img>
+          <span className="username-logo">IoA</span>
+        </div>
+        <div className="menu">☰</div>
+      </div>
       <ul>
         {groups.map((group) => (
           <li

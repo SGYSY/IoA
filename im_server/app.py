@@ -1,5 +1,6 @@
 import json
 import uuid
+import logging
 from copy import deepcopy
 from datetime import datetime
 from urllib.parse import quote, unquote
@@ -19,16 +20,18 @@ from common.types import (
     AgentRegistryTeamupOutput,
     AgentRegistryTeamupParam,
     ChatRecordFetchParam,
+    CommunicationType,
 )
 from common.utils.database_utils import AutoStoredDict
 from common.utils.milvus_utils import ConfigMilvusWrapper
 
+# Set a server instance
 app = FastAPI()
 
 origins = ["*"]
 
 app.add_middleware(
-    CORSMiddleware,
+    CORSMiddleware, # A middleware to share cross-domain resource  
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
@@ -47,14 +50,25 @@ class ConnectionManager:
 
     async def disconnect(self, agent_name: str):
         self.agent_to_websocket.pop(agent_name, None)
+        print(self.agent_to_websocket)
 
     async def send_personal_message(self, receiver: str, message: AgentMessage):
+        # try:
+        #     breakpoint()
+        #     websocket = self.agent_to_websocket[receiver]
+        # except:
+        #     logger.error(f"Failed to find the websocket for {receiver}")
+        # await websocket.send_text(message.model_dump_json())
         try:
             websocket = self.agent_to_websocket[receiver]
-        except:
+            await websocket.send_text(message.model_dump_json())
+        except KeyError:
             logger.error(f"Failed to find the websocket for {receiver}")
-        await websocket.send_text(message.model_dump_json())
-
+        except Exception as e:
+            logger.error(f"Error sending message to {receiver}: {e}")
+        
+    def get_all_connections(self):
+        return list(self.agent_to_websocket.keys())
 
 class AgentRegistry:
     """
@@ -114,8 +128,10 @@ class SessionManager:
     def __init__(self):
         self.sessions = AutoStoredDict("database/server/sessions.db", tablename="sessions")
 
-    async def teamup(self, agent_names: list[str]) -> AgentRegistryTeamupOutput:
-        comm_id = uuid.uuid4().hex
+    async def teamup(self, agent_names: list[str], comm_id=None) -> AgentRegistryTeamupOutput:
+        if comm_id is None:
+            comm_id = uuid.uuid4().hex
+        print(f"New Chat comm_id: {comm_id}")
         session_group = []
         for name in agent_names:
             if name in agent_registry.agents.keys():
@@ -124,23 +140,28 @@ class SessionManager:
         return {"comm_id": comm_id, "agent_names": session_group}
 
 
+logger = logging.getLogger("websocket")
+
 @app.websocket("/ws/{agent_name}")
 async def websocket_endpoint(websocket: WebSocket, agent_name: str):
     """
-    Endpoint for receiving agent messages
+    Endpoint for receiving and sending agent messages
     """
-    await connection_manager.connect(websocket, agent_name)
     agent_name = unquote(agent_name)
+    await connection_manager.connect(websocket, agent_name)
+    
 
     try:
         while True:
             # 1. listen to the websocket
             data = await websocket.receive_text()
             try:
+                # breakpoint()
                 # 2. parse the received message using Agent Message protocol
                 parsed_data = AgentMessage.model_validate_json(data)
+                #breakpoint()
             except:
-                logger.error("Failed to parse the message: {data}")
+                logger.error(f"Failed to parse the message: {data}")
             if parsed_data.comm_id not in session_manager.sessions:
                 logger.error(f"Failed to find the session {parsed_data.comm_id} for {agent_name}")
 
@@ -153,21 +174,52 @@ async def websocket_endpoint(websocket: WebSocket, agent_name: str):
                 await connection_manager.send_personal_message(receiver, parsed_data)
 
     except WebSocketDisconnect:
+        # logger.warn(f"{agent_name} disconnected")
         agent_name = quote(agent_name)
         await connection_manager.disconnect(agent_name)
-
+        
 
 @app.websocket("/chatlist_ws")
 async def websocket_chatlist(websocket: WebSocket):
     await websocket.accept()
     global frontend_ws
     frontend_ws = websocket
-
+    type = CommunicationType.LAUNCH_GOAL
     try:
         while True:
+            current_connections = connection_manager.get_all_connections()
+            print(f"Current WebSocket connections: {current_connections}")
+            
             data = await websocket.receive_text()
-
+            # 解析和处理消息内容
+            message_data = json.loads(data)
+            content = message_data.get("content", "")
+            sender = message_data.get("sender", "")
+            # comm_id = message_data.get("comm_id", "")
+            
+            # 创建AgentRegistryRetrivalParam对象
+            param = AgentRegistryRetrivalParam(sender=sender, capabilities=[content])
+            
+            # 开始检索agent
+            agent_infos =await retrieve_assistant(param)
+            # breakpoint()
+            
+            # 选择第一个agent
+            if agent_infos:
+                selected_agent = agent_infos[0].name
+                message_to_agent = AgentMessage(
+                    comm_id=uuid.uuid4().hex,
+                    sender=sender,
+                    content=content,
+                    type=type,
+                )
+                # breakpoint()
+                await connection_manager.send_personal_message(selected_agent, message_to_agent)
+            #将结果发送回前端
+            # response = [info.model_dump() for info in agent_infos]
+            # await websocket.send_text(json.dumps(response))
     except WebSocketDisconnect:
+        print("Fronted disconnected")
         frontend_ws = None
 
 
@@ -199,10 +251,11 @@ async def query_assistant(
 
 @app.post("/teamup")
 async def teamup(teamup_param: AgentRegistryTeamupParam):
-    result = await session_manager.teamup(teamup_param.agent_names + [teamup_param.sender])
+    result = await session_manager.teamup(teamup_param.agent_names + [teamup_param.sender], comm_id=teamup_param.comm_id)
     result["team_name"] = teamup_param.team_name
     chat_record_manager[result["comm_id"]] = {
-        "comm_id": result["comm_id"],
+        # "comm_id": result["comm_id"],
+        "comm_id": teamup_param.comm_id,
         "agent_names": result["agent_names"],
         "team_name": teamup_param.team_name,
         "chat_record": [],
