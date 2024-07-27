@@ -1,0 +1,76 @@
+.message-list-container {
+  display: flex;
+  flex-direction: column;
+  width: 80%; /* 确保容器占据整个宽度 */
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 15px;
+  max-width: 70%;
+  width: auto; /* 使消息框宽度自动调整 */
+  position: relative; /* 为单个消息设置相对定位 */
+}
+
+.message-user {
+  align-self: flex-end; /* 将用户消息对齐到右侧 */
+  background-color: #f5f1f7; /* 纯色背景 */
+}
+
+.message-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.message-header-user {
+  display: flex;
+  align-items: center;
+  align-self: flex-end;
+  margin-bottom: 5px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.username {
+  font-weight: bold;
+  color: rgb(8, 9, 60); /* 修改字体颜色 */
+}
+
+.message-bubble {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 10px;
+  border-radius: 15px;
+  background-color: rgb(253, 253, 254);
+  width: 100%;
+}
+
+.message-bubble-user {
+  padding: 10px;
+  border-radius: 15px;
+  background-color: rgb(186, 188, 248);
+  min-width: 15%;
+  max-width: 100%;
+  width: auto; /* 使消息框宽度自动调整 */
+}
+
+.message-key {
+  font-weight: bold;
+  color: rgb(8, 9, 60); /* 修改字体颜色 */
+}
+
+.message-value {
+  white-space: pre-wrap;
+  color: rgb(8, 9, 60); /* 修改字体颜色 */
+}

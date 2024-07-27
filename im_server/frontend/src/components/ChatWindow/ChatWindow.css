@@ -1,0 +1,203 @@
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Adjust based on your container */
+  border: 1px solid lightgray;
+  width: 100%;
+}
+
+.chat-header {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-bottom: 1px solid lightgray;
+  font-weight: bold;
+  font-size: 12px; /* Adjust the font size as needed */
+}
+
+.chat-messages {
+  flex-grow: 1; /* Allow message area to take up available space */
+  overflow-y: auto; /* Enable scrolling for long chats */
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f1f7;
+  align-items: center; /* 居中对齐子元素 */
+  position: relative;
+}
+
+/* .chat-goal {
+  padding: 10px;
+  background-color: rgb(224, 240, 255);
+  border-radius: 15px;
+  border: 1px solid #ddd;
+  white-space: pre-wrap;
+} */
+
+.chat-goal-title {
+  font-weight: bold;
+}
+
+.message-container {
+  display: flex;
+  justify-content: center;
+  background-color: #f5f1f7; /* 纯色背景 */
+  padding: 10px;
+  border-top: none; /* 移除边框 */
+}
+
+.message-input {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 20px;
+  padding: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* 添加轻微的阴影效果 */
+  width: 60%; /* 调整宽度使输入框变长 */
+}
+
+.message-input input[type="text"] {
+  flex-grow: 1;
+  padding: 10px;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  margin-right: 10px;
+  width: 100%; /* 调整输入框宽度 */
+}
+
+.message-input .send-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.message-input .send-button img {
+  width: 24px;
+  height: 24px;
+}
+
+.right-header-bar {
+  display: flex; /* 使用 flexbox */
+  align-items: center; /* 垂直居中对齐 */
+  justify-content: space-between; /* 内容之间的间距 */
+  background-color: #f5f1f7; /* 纯色背景 */
+  padding: 10px 15px; /* 给整个 header 添加内边距 */
+  border-bottom: 1px solid lightgray;
+}
+
+.group-name {
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 20px; /* 标题和用户信息之间的间距 */
+  color: rgb(8, 9, 60); /* 修改字体颜色 */
+}
+
+.actions {
+  display: flex; /* 使 New chat 和 Share 在一行 */
+  align-items: center; /* 垂直居中对齐 */
+}
+
+.new-chat {
+  display: flex; /* 使 Logo 和用户名在一行 */
+  align-items: center; /* 垂直居中对齐 */
+  color: rgb(8, 9, 60); /* 修改字体颜色 */
+  cursor: pointer;
+}
+
+.username-chat {
+  font-weight: bold; /* 加粗 */
+  color: rgb(8, 9, 60); /* 修改字体颜色 */
+  padding: 5px 0 5px 0;
+}
+
+.share {
+  display: flex; /* 使 Logo 和用户名在一行 */
+  align-items: center; /* 垂直居中对齐 */
+  padding: 5px; /* Logo 和用户名周围的内边距 */
+  color: rgb(8, 9, 60); /* 修改字体颜色 */
+  cursor: pointer;
+}
+
+.chat-img {
+  width: 30px;  /* 设置宽度 */
+  height: 30px;  /* 保持纵横比 */
+  margin-right: 10px; /* Logo 图片与用户名之间的间距 */
+  padding: 7px 0 3px 0;
+}
+
+.share-img {
+  width: 20px;  /* 设置宽度 */
+  height: 20px;  /* 保持纵横比 */
+  margin-right: 10px; /* Logo 图片与用户名之间的间距 */
+  margin-left: 25px; 
+}
+
+.task-cards-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  top: 20%; /* Adjust the value as needed */
+  width: 100%;
+}
+
+
+
+.task-cards-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px; /* Space between the header and the task cards */
+}
+
+.task-cards-logo {
+  width: 50px; /* Adjust the size as needed */
+  height: 50px; /* Adjust the size as needed */
+  margin-right: 10px; /* Space between the logo and the text */
+}
+
+.task-cards-title {
+  font-size: 20px; /* Adjust the font size as needed */
+  color: rgb(8, 9, 60); /* 修改字体颜色 */
+  font-weight: bold;
+}
+
+.task-cards {
+  display: flex;
+  justify-content: center;
+  background-color: #f5f1f7;
+  flex-wrap: wrap;
+}
+
+.task-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  height: 150px;
+  background-color: #f5f1f7;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin: 10px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.task-card img {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 10px;
+}
+
+.task-card span {
+  font-size: 14px;
+  color: #333;
+}
+
+.task-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
