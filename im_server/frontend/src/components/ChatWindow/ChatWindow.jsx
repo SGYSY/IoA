@@ -18,51 +18,6 @@ function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, reset
   const [shouldScroll, setShouldScroll] = useState(false);
   const scrollRef = useRef(null);
   const { ws } = useContext(WebSocketContext);
-  // const connectWebSocket = () => {
-  //   ws.current = new WebSocket(ws_url);
-
-  //   ws.current.onopen = () => {
-  //     // 心跳检测重置
-  //     handleHeartCheck.reset().start();
-  //     // ws.current.send("hello")
-  //     console.log("WebSocket connection opened");
-  //   };
-    
-  //   // ws.current.onmessage = (event) => {
-  //   //   const data = event.data;
-  //   //   // 连接正常
-  //   //   handleHeartCheck.reset().start();
-  //   //   console.log("Received message:", data);
-  //   //   // 暂时注释
-  //   //   //splayMessages((prevMessages) => [...prevMessages, { message: data }]);
-  //   // };
-
-  //   ws.current.onmessage = handleWebSocketMessage;
-
-  //   ws.current.onclose = (event) => {
-  //     // 重新连接websocket
-  //     reContent(ws_url);
-  //     console.log("WebSocket connection closed:", event);
-  //     // setTimeout(connectWebSocket, 1000);
-  //   };
-
-  //   ws.current.onerror = (error) => {
-  //     // 重新连接websocket
-  //     reContent(ws_url);
-  //     console.log("WebSocket error:", error);
-  //   };
-  // };
-
-
-  // useEffect(() => {
-  //   connectWebSocket();
-
-  //   return () => {
-  //     if (window.onbeforeunload) {
-  //       ws.current.close();
-  //     }
-  //   };
-  // }, []);
 
 
   useEffect(() => {
@@ -147,12 +102,12 @@ function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, reset
       // 发送消息到 WebSocket
       ws.send(JSON.stringify(message));
   
-      // 更新本地状态以显示消息
-      setDisplayMessages((prevMessages) => [...prevMessages, message]);
-  
+      
       // 清空输入框
       setNewMessageText("");
       setShowTaskCards(false); // 发送消息后隐藏task-cards
+      // 更新本地状态以显示消息
+      setDisplayMessages((prevMessages) => [...prevMessages, message]);
     }
   };
 
@@ -175,7 +130,7 @@ function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, reset
     <div className="chat-window">
         {/* <span className="group-name">{group.team_name}</span> */}
       <div className="right-header-bar">
-        <span className="group-name">INTERNET OF AGENTS</span>
+        <span className="group-name">Internet of Agents</span>
         <div className="actions"> {/* 包裹 New chat 和 Share 的 div */}
           <div className="new-chat" onClick={resetChat}>
             <img src={chatIcon} alt="Chat" className="chat-img" />

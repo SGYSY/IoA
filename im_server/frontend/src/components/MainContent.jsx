@@ -70,6 +70,7 @@ function MainContent() {
           selectedGroup ? commID2Name[selectedGroup] : "Select a group"
         }
         showTaskCards={showTaskCards}
+        setShowTaskCards={setShowTaskCards}
       />
     </div>
   );
