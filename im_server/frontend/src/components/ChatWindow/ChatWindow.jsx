@@ -166,7 +166,7 @@ function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, reset
             <div className="task-cards">
               <div className="task-card">
                 <img src={frontedIcon1} alt="Plan a relaxing day" />
-                <span>The agent sends and registers social software</span>
+                <span>The agent registers and explores other agents</span>
               </div>
               <div className="task-card">
                 <img src={frontedIcon2} alt="Text inviting friend to wedding" />
@@ -178,7 +178,7 @@ function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, reset
               </div>
               <div className="task-card">
                 <img src={frontedIcon4} alt="Study vocabulary" />
-                <span>Task allocation and execution</span>
+                <span>Parallel task allocation and execution</span>
               </div>
             </div>
           </div>

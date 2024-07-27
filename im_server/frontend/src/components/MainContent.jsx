@@ -5,11 +5,11 @@ import ChatWindow from "./ChatWindow/ChatWindow";
 
 function MainContent() {
   const [selectedGroup, setSelectedGroup] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
   const [showTaskCards, setShowTaskCards] = useState(true);
   const { ws, groups, setGroups, setMessages, messages, commID2Name } =
     useContext(WebSocketContext);
 
-  // Fetch all the chat records from the server when initialized
   useEffect(() => {
     fetch("http://127.0.0.1:7788/fetch_chat_record", {
       method: "POST",
@@ -58,12 +58,23 @@ function MainContent() {
 
   const handleGroupSelect = (group) => {
     setSelectedGroup(group);
+    setSelectedId(group);
     setShowTaskCards(false);
+  };
+
+  const resetChat = () => {
+    setSelectedGroup(null);
+    setSelectedId(null);
+    setShowTaskCards(true);
   };
 
   return (
     <div className="app-container">
-      <GroupList groups={groups} onGroupSelect={handleGroupSelect} />
+      <GroupList 
+        groups={groups} 
+        onGroupSelect={handleGroupSelect} 
+        selectedId={selectedId}
+      />
       <ChatWindow
         messages={selectedMessages}
         teamName={
@@ -71,6 +82,7 @@ function MainContent() {
         }
         showTaskCards={showTaskCards}
         setShowTaskCards={setShowTaskCards}
+        resetChat={resetChat}
       />
     </div>
   );
