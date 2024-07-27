@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import Message from "../Message/Message"; // Assuming you have a Message component
-import "./ChatWindow.css"; // Assuming you have a CSS file
+import Message from "../Message/Message";
+import "./ChatWindow.css";
 import ReactMarkdown from 'react-markdown';
 import sendIcon from '../ChatWindow/submit_icon.png';
 import chatIcon from '../ChatWindow/new_chat.png';
@@ -10,8 +10,8 @@ import frontedIcon2 from '../ChatWindow/frontedIcon2.png';
 import frontedIcon3 from '../ChatWindow/frontedIcon3.png';
 import frontedIcon4 from '../ChatWindow/frontedIcon4.png';
 import { WebSocketContext } from '../../WebSocketContext';
+import AnimatedLoadingText from '../../utils/AnimatedLoadingText';
 import logoIcon from '../ChatWindow/IoA_logo.png';
-import loadingIcon from '../ChatWindow/load.png';
 
 function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, resetChat, loading, setLoading }) { 
   const [displayMessages, setDisplayMessages] = useState([]);
@@ -185,12 +185,13 @@ function ChatWindow({ messages, teamName, showTaskCards, setShowTaskCards, reset
             </div>
           </div>
         )}
-        {loading && (
+        {/* {loading && (
           <div className="loading-container">
             <img src={loadingIcon} alt="Loading" className="loading-icon" />
             <span className="loading-text">Currently forming a group chat for you</span>
           </div>
-        )}
+        )} */}
+        {loading && <AnimatedLoadingText />}
       </div>
       <div className="message-container">
         <form className="message-input" onSubmit={handleSubmit}>

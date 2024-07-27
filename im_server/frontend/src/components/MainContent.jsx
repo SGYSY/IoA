@@ -9,6 +9,7 @@ function MainContent() {
   const [showTaskCards, setShowTaskCards] = useState(true);
   const { ws, groups, setGroups, setMessages, messages, commID2Name } =
     useContext(WebSocketContext);
+  const [loading, setLoading] = useState(false); // 添加加载状态
 
   useEffect(() => {
     fetch("http://127.0.0.1:7788/fetch_chat_record", {
@@ -54,18 +55,30 @@ function MainContent() {
       });
   }, []);
 
+  // when groups change and is currently loading, set loading to false
+  // and set selectedGroup to the first group
+  useEffect(() => {
+    if (groups.length > 0 && loading) {
+      setLoading(false);
+      setSelectedGroup(groups[0].comm_id);
+      setSelectedId(groups[0].comm_id);
+    }
+  }, [groups]);
+
   let selectedMessages = messages[selectedGroup] || [];
 
   const handleGroupSelect = (group) => {
     setSelectedGroup(group);
     setSelectedId(group);
     setShowTaskCards(false);
+    setLoading(false);
   };
 
   const resetChat = () => {
     setSelectedGroup(null);
     setSelectedId(null);
     setShowTaskCards(true);
+    setLoading(false);
   };
 
   return (
@@ -83,6 +96,8 @@ function MainContent() {
         showTaskCards={showTaskCards}
         setShowTaskCards={setShowTaskCards}
         resetChat={resetChat}
+        loading={loading} // 传递加载状态
+        setLoading={setLoading} // 传递设置加载状态的方法
       />
     </div>
   );
