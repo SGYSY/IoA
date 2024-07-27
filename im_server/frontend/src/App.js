@@ -178,6 +178,8 @@ function App() {
   const [messages, setMessages] = useState({});
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [showTaskCards, setShowTaskCards] = useState(true);
+  const [loading, setLoading] = useState(false); // 添加加载状态
+
 
   let commID2Name = {};
   let socket;
@@ -316,6 +318,7 @@ function App() {
   const handleGroupSelect = (group) => {
     setSelectedGroup(group);
     setShowTaskCards(false);
+    setLoading(false); // 取消加载状态
   };
 
   const resetChat = () => {
@@ -332,6 +335,8 @@ function App() {
         showTaskCards={showTaskCards}
         setShowTaskCards={setShowTaskCards} // 传递回调函数
         resetChat={resetChat}
+        loading={loading} // 传递加载状态
+        setLoading={setLoading} // 传递设置加载状态的方法
       />
     </div>
   );
